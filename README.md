@@ -22,7 +22,8 @@ deltas.
 ## Example Usage
 
 Create new repository:
-```> dbackup.py -w /tmp/staging-dir init /tmp/watched-dir
+```
+> dbackup.py -w /tmp/staging-dir init /tmp/watched-dir
 Staging directory created:
   Staging dir:  /tmp/staging-dir
   Watched dir:  /tmp/watched-dir
@@ -30,7 +31,8 @@ Staging directory created:
 ```
 
 Check status of repository:
-```> dbackup.py -w /tmp/staging-dir status
+```
+> dbackup.py -w /tmp/staging-dir status
 Staging_dir:     /tmp/staging-dir
 Watched_dir:     /tmp/watched-dir
 Emails_sent_to:  your.email@address.here
@@ -46,7 +48,8 @@ available_isos:  0
 ```
 
 Stage any changes:
-```> dbackup.py -w /tmp/staging-dir monitor
+```
+> dbackup.py -w /tmp/staging-dir monitor
 /tmp/watched-dir/foo1: New file
 /tmp/watched-dir/foo2: New file
 /tmp/watched-dir/foo3: New file
