@@ -210,9 +210,11 @@ exit 0
                 (modified, desc) = self.is_file_changed(fullfile)
                 if (modified):
                     if self.cronmode:
-                        print "+ %s" % fullfile
+                        s = u"+ %s" % fullfile
+                        print s.encode('utf-8')
                     else:
-                        print "%s: %s" % (fullfile, desc)
+                        s = u"%s: %s" % (fullfile, desc)
+                        print s.encode('utf-8')
 
                     self.add_file(fullfile, desc)
 
