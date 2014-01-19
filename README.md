@@ -69,7 +69,9 @@ to a strong multi-versioned backup strategy. If your data is that critical to
 you, then you should invest accordingly.
 
 dBackup IS designed to help automate good "simple" backup practise by automatically
-detecting when a file has changed, taking a copy of it,
+detecting when a file has changed, taking a copy of it, constructing DVD ISO
+images of the copies, and giving you the tools to locate the copies within the
+generated images.
 
 dBackup makes no guarantees to preventing data loss, or to being able to recover
 your data in the event of a failure. You are encouraged to read the source code,
