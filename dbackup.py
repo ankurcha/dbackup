@@ -219,6 +219,71 @@ exit 0
                     self.add_file(fullfile, desc)
 
 
+    def lost_disc(self, disc_id):
+        if not(self.settings):
+            self.load_settings()
+
+        # get a list of the files that were on that disc
+        cur1 = self.db.cursor()
+
+        sql1 = "SELECT filename, timestamp FROM files WHERE disc_id=?"
+        cur1.execute(sql1, (disc_id,))
+        rows = cur1.fetchall()
+
+
+        # of those files, find those where the latest version is on the disc
+        needs_replacement = []
+
+        for row in rows:
+            cur2 = self.db.cursor()
+            sql2 = "SELECT timestamp,disc_id FROM files WHERE filename=? ORDER BY timestamp DESC LIMIT 1"
+            cur2.execute(sql2, (row[0],))
+
+            matches = cur2.fetchall()
+
+            if len(matches) > 0:  # it should - if not there's a DB integrity issue
+                latest_ts = matches[0]
+                latest_disc = matches[1]
+
+                if (latest_ts != row[1]) or (latest_disc == disc_id):
+                    # the latest version was on the disc
+                    needs_replacement.append(row[0])
+
+
+        # now go through and try and schedule the lost files
+        lost_files = []
+        success_count = 0
+        real_watch = os.path.realpath(self.settings['watch_dir'])
+        real_watch = real_watch.decode()
+
+        for f in needs_replacement:
+            full_file = os.path.join( real_watch, f )
+            if os.path.exists( full_file ):
+                self.add_file(full_file, "Duplicated due to lost disc %d" % disc_id)
+                success_count = success_count + 1
+            else:
+                lost_files.append(f)
+
+
+        # Finally mark the disc as lost
+        cur3 = self.db.cursor()
+        sql3 = "UPDATE discs SET available=0 WHERE id=?"
+        cur3.execute(sql3, (disc_id,))
+
+        # report to the user
+        print "Disc %d has been marked as lost." % disc_id
+        print "  Disc contained %d files" % len(rows)
+        print "  Of these, %d were the most recent backup and needed re-backing up" % len(needs_replacement)
+        print "  Of those that needed re-backing up, %d were successfully added to the latest disc" % success_count
+        if len(lost_files) == 0:
+            print "  All file that needed to be recovered, were recovered. You have no data loss"
+        else:
+            print "  %d files could not be recovered, and were lost" % len(lost_files)
+            print "  These files are:"
+            for f in lost_files:
+                print "    %s" % f
+
+
     #
     # -- Internal, Util functions ---------------------------------------------
     #
@@ -565,9 +630,17 @@ this mode will exit with an error message.
         sys.exit(0)
 
     if args.command == 'lost':
-        pass
-        mgr.finish()
-        sys.exit(0)
+        if args.detail == None:
+            parser.error("The 'detail' parameter is required for the 'lost' command (it specifies the disc number the was lost).")
+        else:
+            try:
+                mgr.lost_disc(int(args.detail))
+                mgr.finish()
+                sys.exit(0)
+            except ValueError:
+                parser.error("The 'details' parameter must be numeric for the 'lost' command.")
+
+        sys.exit(1)
 
 #
 # ----------------------------------------------------------------------------------
