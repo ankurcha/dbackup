@@ -378,17 +378,27 @@ exit 0
         )
     
         # now spawn off the processing of the disc
-        bg = subprocess.Popen(
-          [ '/bin/sh', os.path.join( self.working_dir, 'hooks', 'process.sh' ), self.working_dir, "%s" % disc_id, self.settings['email'] ],
-          shell=False,
-          stdin=None, stdout=None, stderr=None,
-          cwd=self.working_dir
-        )
+        if 'sync_iso' in self.settings:
+            fg = subprocess.Popen(
+              [ '/bin/sh', os.path.join( self.working_dir, 'hooks', 'process.sh' ), self.working_dir, "%s" % disc_id, self.settings['email'] ],
+              shell=False,
+              cwd=self.working_dir
+            )
+            print "Waiting on disc %d completion" % (disc_id)
+            fg.communicate()
 
-        if self.cronmode:
-            print "  - Background processing of disc %d (PID=%d)" % (disc_id, bg.pid)
         else:
-            print "*** Started background processing of disc %d (PID=%d) ***" % (disc_id, bg.pid)
+            bg = subprocess.Popen(
+              [ '/bin/sh', os.path.join( self.working_dir, 'hooks', 'process.sh' ), self.working_dir, "%s" % disc_id, self.settings['email'] ],
+              shell=False,
+              stdin=None, stdout=None, stderr=None,
+              cwd=self.working_dir
+            )
+    
+            if self.cronmode:
+                print "  - Background processing of disc %d (PID=%d)" % (disc_id, bg.pid)
+            else:
+                print "*** Started background processing of disc %d (PID=%d) ***" % (disc_id, bg.pid)
 
 
     def file_calc_md5(self, filename):
