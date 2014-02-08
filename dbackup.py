@@ -516,7 +516,7 @@ def main():
     )
     parser.add_argument(
       'command',
-      choices=['init', 'monitor', 'status', 'lost', 'usage'],
+      choices=['init', 'monitor', 'status', 'lost', 'usage', 'close'],
       metavar='command',
       help="One of 'init', 'monitor', 'status', 'lost' or 'usage'"
     )
@@ -644,6 +644,11 @@ this mode will exit with an error message.
 
     if args.command == 'monitor':
         mgr.monitor()
+        mgr.finish()
+        sys.exit(0)
+
+    if args.command == 'close':
+        mgr.close_disc(mgr.get_current_disc)
         mgr.finish()
         sys.exit(0)
 
