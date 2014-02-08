@@ -166,6 +166,14 @@ exit 0
             )
             ''')
 
+        self.db.execute('''
+            CREATE INDEX filenames 
+            ON files (
+              filename,
+              copied
+            )
+            ''')
+
         self.db.commit()
 
         disc_id = self.start_disc()
