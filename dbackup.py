@@ -651,6 +651,7 @@ this mode will exit with an error message.
         sys.exit(0)
 
     if args.command == 'close':
+        mgr.load_settings()
         mgr.close_disc(mgr.get_current_disc())
         mgr.finish()
         sys.exit(0)
