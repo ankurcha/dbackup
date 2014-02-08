@@ -353,6 +353,9 @@ exit 0
 
 
     def start_disc(self):
+        if not(self.settings):
+            self.load_settings()
+
         cur = self.db.cursor()
         os.mkdir( os.path.join( self.working_dir, 'staging' ) )
         cur.execute("INSERT INTO discs (started, completed, available) VALUES (?, NULL, 1)", (time.time(),))
@@ -648,7 +651,7 @@ this mode will exit with an error message.
         sys.exit(0)
 
     if args.command == 'close':
-        mgr.close_disc(mgr.get_current_disc)
+        mgr.close_disc(mgr.get_current_disc())
         mgr.finish()
         sys.exit(0)
 
